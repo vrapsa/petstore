@@ -1,11 +1,13 @@
 class CommonSteps:
+    # Common
+    VERIFY_API_RESPONSE = "Проверить ответ API"
+
     # Pet
     CREATE_PET = "Выполнить запрос создания питомца"
     DELETE_PET = "Выполнить запрос удаления существующего питомца"
     GET_PET = "Выполнить запрос получения питомца"
     PREPARE_TEST_DATA = "Подготовить тестовые данные"
     UPDATE_PET = "Выполнить запрос обновления существующего питомца"
-    VERIFY_API_RESPONSE = "Проверить ответ API"
 
     # User
     CREATE_USER = "Выполнить запрос создания пользователя"

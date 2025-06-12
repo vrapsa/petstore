@@ -8,5 +8,5 @@ except FileNotFoundError:
 
 URL = env.str("URL", default="")
 USER_ID = env.str("USER_ID", default="")
-USERNAME = env.str("USERNAME", default="")
-PASSWORD = env.str("PASSWORD", default="")
+USER_NAME = env.str("USER_NAME", default="")
+USER_PASSWORD = env.str("USER_PASSWORD", default="")

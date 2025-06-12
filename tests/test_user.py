@@ -19,12 +19,12 @@ class TestUser:
     def test_post_user(self, api):
         with allure.step(CommonSteps.PREPARE_TEST_DATA):
             user_id = cfg.USER_ID
-            username = cfg.USERNAME
-            password = cfg.PASSWORD
+            user_name = cfg.USER_NAME
+            password = cfg.USER_PASSWORD
         with allure.step(CommonSteps.CREATE_USER):
             response = api.petstore.post_user({**deepcopy(post_user.body),
                                                "id": user_id,
-                                               "username": username,
+                                               "username": user_name,
                                                "password": password})
             with allure.step(CommonSteps.VERIFY_API_RESPONSE):
                 response_json = api.petstore.valid_json(response)
