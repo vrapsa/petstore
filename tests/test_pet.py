@@ -6,7 +6,7 @@ import allure
 import pytest
 from loguru import logger
 
-from data.files.pets import post_pet
+from data.files.pet import post_pet
 from data.models.pets.model import PetList, PetDict
 from data.models.common import Common
 from helpers.api.client import Api
