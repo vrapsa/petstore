@@ -18,12 +18,6 @@ from utils.allure.steps import CommonSteps
 @allure.label("feature", "Petstore API")
 @allure.label("part", "Питомцы")
 class TestPets:
-    PET_STATUS = ["available", "pending", "sold"]
-    PARAMETRIZE = [
-        (555445, "available"),
-        (555446, "pending"),
-        (555447, "sold")
-    ]
 
     @staticmethod
     def get_valid_pet_by_id(pet_id: int) -> dict:
@@ -71,12 +65,13 @@ class TestPets:
                 continue
         return pytest.fail(reason="Pet is not found.")
 
-    @allure.id("1")
-    @allure.title("Проверить получения питомца по статусу")
     @pytest.mark.parametrize("status", [
-        status for status in PET_STATUS
+        pytest.param("available", marks=allure.id("1")),
+        pytest.param("pending", marks=allure.id("2")),
+        pytest.param("sold", marks=allure.id("3")),
     ])
     def test_get_by_status(self, api, status):
+        allure.dynamic.title(f"Проверить получение питомца по статусу: {status}")
         with allure.step(f"Выполнить запрос получения питомца со status: {status}"):
             response = api.petstore.get_find_by_status(status)
         with allure.step(CommonSteps.VERIFY_API_RESPONSE):
@@ -84,10 +79,13 @@ class TestPets:
             logger.debug(response_json)
             PetList.model_validate(response_json)
 
-    @allure.id("2")
-    @allure.title("Проверить создание питомца")
-    @pytest.mark.parametrize("pet_id, status", PARAMETRIZE)
+    @pytest.mark.parametrize("pet_id, status", [
+        pytest.param(555445, "available", marks=allure.id("4")),
+        pytest.param(555446, "pending", marks=allure.id("5")),
+        pytest.param(555447, "sold", marks=allure.id("6"))
+    ])
     def test_post_pet(self, api, pet_id, status):
+        allure.dynamic.title(f"Проверить создание питомца с id: {pet_id} и статусом: {status}")
         with allure.step(f"{CommonSteps.CREATE_PET} с id: {pet_id} и статусом: {status}"):
             response = api.petstore.post_pet({**deepcopy(post_pet.body),
                                               "id": pet_id,
@@ -98,11 +96,14 @@ class TestPets:
                 assert response_json["id"] == pet_id
                 assert response_json["status"] == status
 
-    @allure.id("3")
-    @allure.title("Проверить получение питомца по идентификатору")
-    @pytest.mark.parametrize("pet_id, status", PARAMETRIZE)
+    @pytest.mark.parametrize("pet_id, status", [
+        pytest.param(555445, "available", marks=allure.id("7")),
+        pytest.param(555446, "pending", marks=allure.id("8")),
+        pytest.param(555447, "sold", marks=allure.id("9"))
+    ])
     def test_get_by_id(self, api, pet_id, status):
-        with allure.step(f"{CommonSteps.CREATE_PET} с id: {pet_id} и статусом: {status}"):
+        allure.dynamic.title(f"Проверить получение питомца по идентификатору: {pet_id}")
+        with allure.step(f"{CommonSteps.CREATE_PET} с id: {pet_id}"):
             response = api.petstore.post_pet({**deepcopy(post_pet.body),
                                               "id": pet_id,
                                               "status": status})
@@ -110,11 +111,11 @@ class TestPets:
                 response_json = api.petstore.valid_json(response)
                 assert response_json["id"] == pet_id
         with allure.step(f"{CommonSteps.GET_PET} по id: {pet_id}"):
-            response_json = TestPets.get_valid_pet_by_id(pet_id)
+            response_json = TestPets.get_valid_pet_by_id(int(pet_id))
             assert response_json["id"] == pet_id
             assert response_json["status"] == status
 
-    @allure.id("4")
+    @allure.id("10")
     @allure.title("Проверить обновление питомца")
     def test_put_existing_pet(self, api):
         with allure.step(CommonSteps.PREPARE_TEST_DATA):
@@ -141,7 +142,7 @@ class TestPets:
                 assert response_json["status"] == pet_status
                 assert response_json["name"] == "Updated Seven" != pet_name
 
-    @allure.id("5")
+    @allure.id("11")
     @allure.title("Проверить удаление питомца")
     def test_delete_pet(self, api):
         with allure.step(CommonSteps.PREPARE_TEST_DATA):
