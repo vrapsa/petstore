@@ -19,52 +19,6 @@ from utils.allure.steps import CommonSteps
 @allure.label("part", "Питомцы")
 class TestPets:
 
-    @staticmethod
-    def get_valid_pet_by_id(pet_id: int) -> dict:
-        """ Функция выполняет обход некорректной работы API.
-            Метод GET /pet/{petId} периодически возвращает 404, несмотря на то,
-            что такой pet_id существует.
-            На реальном проекте, конечно, никакие обходы не нужны, т.к. если
-            подстраивать автотесты под каждую ошибку, то в автотестах нет смысла. """
-        api = Api()
-        start_time = datetime.datetime.now()
-        timeout = datetime.timedelta(seconds=15)
-        while datetime.datetime.now() - start_time < timeout:
-            response = api.petstore.get_pet_by_id(pet_id)
-            if response.status_code == 200:
-                with allure.step(CommonSteps.VERIFY_API_RESPONSE):
-                    response_json = api.petstore.valid_json(response)
-                    PetDict.model_validate(response_json)
-                    return response_json
-            else:
-                logger.debug(f"Unexpected status code: {response.status_code}")
-                time.sleep(1)
-                continue
-        return pytest.fail(reason="Pet is not found.")
-
-    @staticmethod
-    def delete_pet_by_id(pet_id: int) -> dict:
-        """ Функция выполняет обход некорректной работы API.
-            Метод DELETE /pet/{petId} периодически возвращает 404, несмотря на то,
-            что такой pet_id существует.
-            На реальном проекте, конечно, никакие обходы не нужны, т.к. если
-            подстраивать автотесты под каждую ошибку, то в автотестах нет смысла. """
-        api = Api()
-        start_time = datetime.datetime.now()
-        timeout = datetime.timedelta(seconds=15)
-        while datetime.datetime.now() - start_time < timeout:
-            response = api.petstore.delete_existing_pet(pet_id)
-            if response.status_code == 200:
-                with allure.step(CommonSteps.VERIFY_API_RESPONSE):
-                    response_json = api.petstore.valid_json(response)
-                    Common.model_validate(response_json)
-                    return response_json
-            else:
-                logger.debug(f"Unexpected status code: {response.status_code}")
-                time.sleep(1)
-                continue
-        return pytest.fail(reason="Pet is not found.")
-
     @pytest.mark.parametrize("status", [
         pytest.param("available", marks=allure.id("1")),
         pytest.param("pending", marks=allure.id("2")),
@@ -111,7 +65,7 @@ class TestPets:
                 response_json = api.petstore.valid_json(response)
                 assert response_json["id"] == pet_id
         with allure.step(f"{CommonSteps.GET_PET} по id: {pet_id}"):
-            response_json = TestPets.get_valid_pet_by_id(int(pet_id))
+            response_json = api.petstore.get_valid_pet_by_id(pet_id)
             assert response_json["id"] == pet_id
             assert response_json["status"] == status
 
@@ -158,5 +112,5 @@ class TestPets:
                 assert pet_id == test_id
                 assert response_json["status"] == test_status
         with allure.step(f"{CommonSteps.DELETE_PET} + с id: {pet_id}"):
-            response_json = TestPets.delete_pet_by_id(pet_id)
+            response_json = api.petstore.delete_valid_pet_by_id(pet_id)
             assert response_json == {"code": 200, "type": "unknown", "message": f"{test_id}"}
