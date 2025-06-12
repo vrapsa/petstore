@@ -13,6 +13,10 @@ from helpers.api.client import Api
 from utils.allure.steps import CommonSteps
 
 
+@allure.label("platform", "Автотесты")
+@allure.label("module", "API")
+@allure.label("feature", "Petstore API")
+@allure.label("part", "Питомцы")
 class TestPets:
     PET_STATUS = ["available", "pending", "sold"]
     PARAMETRIZE = [
