@@ -1,5 +1,3 @@
-import datetime
-import time
 from copy import deepcopy
 
 import allure
@@ -8,8 +6,6 @@ from loguru import logger
 
 from data.files.pet import post_pet
 from data.models.pets.model import PetList, PetDict
-from data.models.common import Common
-from helpers.api.client import Api
 from utils.allure.steps import CommonSteps
 
 
