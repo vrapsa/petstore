@@ -81,7 +81,7 @@ class TestPets:
                 assert response_json["status"] == pet_status
                 pet_name = response_json["name"]
         with allure.step(f"{CommonSteps.UPDATE_PET} с id: {pet_id}"):
-            response = api.petstore.put_existing_pet({**deepcopy(post_pet.body),
+            response = api.petstore.put_pet({**deepcopy(post_pet.body),
                                                       "id": 555448,
                                                       "status": pet_status,
                                                       "name": "Updated Seven"})

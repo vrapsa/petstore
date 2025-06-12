@@ -62,17 +62,17 @@ class PetstoreApi:
                 continue
         return pytest.fail(reason="Pet is not found.")
 
-    def put_existing_pet(self, request_body: dict) -> Response:
+    def put_pet(self, request_body: dict) -> Response:
         url = self.build_url("pet")
         return self.session.put(url, json=request_body)
 
-    def delete_existing_pet(self, pet_id: int) -> Response:
-        """ Настоящий метод, который должен использоваться для получения ID питомца"""
+    def delete_pet_by_id(self, pet_id: int) -> Response:
+        """ Настоящий метод, который должен использоваться для удаления питомца"""
         url = self.build_url(f"pet/{pet_id}")
         return self.session.delete(url)
 
     def delete_valid_pet_by_id(self, pet_id: int) -> dict:
-        """ Костыльный метод настоящего метода delete_existing_pet.
+        """ Костыльный метод настоящего метода delete_pet_by_id.
             Функция выполняет обход некорректной работы API.
             Метод DELETE /pet/{petId} периодически возвращает 404, несмотря на то,
             что такой pet_id существует.
@@ -81,7 +81,7 @@ class PetstoreApi:
         start_time = datetime.datetime.now()
         timeout = datetime.timedelta(seconds=15)
         while datetime.datetime.now() - start_time < timeout:
-            response = PetstoreApi.delete_existing_pet(self, pet_id)
+            response = PetstoreApi.delete_pet_by_id(self, pet_id)
             if response.status_code == 200:
                 response_json = PetstoreApi.valid_json(response)
                 return response_json
@@ -94,3 +94,53 @@ class PetstoreApi:
     def post_user(self, request_body: dict) -> Response:
         url = self.build_url("user")
         return self.session.post(url, json=request_body)
+
+    def get_user_by_user_name(self, user_name: str) -> Response:
+        """ Настоящий метод, который должен использоваться для получения пользователя по username"""
+        url = self.build_url(f"user/{user_name}")
+        return self.session.get(url)
+
+    def get_valid_user_by_user_name(self, user_name: str) -> Response:
+        """ Костыльный метод настоящего метода get_user_by_user_name.
+            Функция выполняет обход некорректной работы API.
+            Метод GET /user/{username} периодически возвращает 404, несмотря на то,
+            что такой user_name существует.
+            На реальном проекте, конечно, никакие обходы не нужны, т.к. если
+            подстраивать автотесты под каждую ошибку, то в автотестах нет смысла. """
+        start_time = datetime.datetime.now()
+        timeout = datetime.timedelta(seconds=15)
+        while datetime.datetime.now() - start_time < timeout:
+            response = PetstoreApi.get_user_by_user_name(self, user_name)
+            if response.status_code == 200:
+                response_json = PetstoreApi.valid_json(response)
+                return response_json
+            else:
+                logger.debug(f"Unexpected status code: {response.status_code}")
+                time.sleep(1)
+                continue
+        return pytest.fail(reason="User is not found.")
+
+    def delete_user_by_user_name(self, user_name: str) -> Response:
+        """ Настоящий метод, который должен использоваться для удаления пользователя"""
+        url = self.build_url(f"user/{user_name}")
+        return self.session.delete(url)
+
+    def delete_valid_user_by_user_name(self, user_name: str) -> dict:
+        """ Костыльный метод настоящего метода delete_user_by_user_name.
+            Функция выполняет обход некорректной работы API.
+            Метод DELETE /user/{username} периодически возвращает 404, несмотря на то,
+            что такой user существует.
+            На реальном проекте, конечно, никакие обходы не нужны, т.к. если
+            подстраивать автотесты под каждую ошибку, то в автотестах нет смысла. """
+        start_time = datetime.datetime.now()
+        timeout = datetime.timedelta(seconds=15)
+        while datetime.datetime.now() - start_time < timeout:
+            response = PetstoreApi.delete_user_by_user_name(self, user_name)
+            if response.status_code == 200:
+                response_json = PetstoreApi.valid_json(response)
+                return response_json
+            else:
+                logger.debug(f"Unexpected status code: {response.status_code}")
+                time.sleep(1)
+                continue
+        return pytest.fail(reason="User is not found.")
