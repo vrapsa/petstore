@@ -44,3 +44,7 @@ class PetstoreApi:
     def delete_existing_pet(self, pet_id: int) -> Response:
         url = self.build_url(f"pet/{pet_id}")
         return self.session.delete(url)
+
+    def post_user(self, request_body: dict) -> Response:
+        url = self.build_url("user")
+        return self.session.post(url, json=request_body)
